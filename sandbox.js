@@ -61,6 +61,7 @@
   document.querySelectorAll('.more-menu .nav-link').forEach(button=>button.addEventListener('click',()=>{button.closest('details').open=false;}));
   document.addEventListener('click',event=>{if(!event.target.closest('.more-menu'))document.querySelector('.more-menu').open=false;});
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelector('.more-menu').open=false;});
+  window.ashlanShop.owns=item=>wallet.owns(item);
   update();
 })();
 

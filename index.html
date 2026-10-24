@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./game.css">
+  <link rel="stylesheet" href="./styles.css?v=8"><link rel="stylesheet" href="./game.css?v=8">
   <title>Ashlan Shop — Today's Fortnite Item Shop</title>
 </head>
 <body><a class="skip-link" href="#shop-content">Skip to shop</a>
@@ -38,7 +38,7 @@
       <a class="brand" href="#top" aria-label="Ashlan Shop home" id="brand-link"><span class="brand-mark"><span>A</span></span><span class="brand-word">ASHLAN<span>SHOP</span></span></a>
       <nav class="primary-nav" aria-label="Main navigation">
         <button class="nav-link is-active" type="button" data-view="shop">Shop</button>
-        <button class="nav-link" type="button" data-sandbox="locker">Locker<span id="locker-count" hidden></span></button><button class="nav-link" type="button" data-sandbox="vbucks">V-Bucks</button><button class="nav-link" type="button" data-page="library">Library</button><details class="more-menu"><summary>Explore</summary><div class="more-menu-panel"><button class="nav-link" type="button" data-page="news">News</button><button class="nav-link" type="button" data-page="map">Map</button><button class="nav-link" type="button" data-page="modes">Modes</button><button class="nav-link" type="button" data-view="new">New today</button>
+        <button class="nav-link" type="button" data-sandbox="locker">Locker<span id="locker-count" hidden></span></button><button class="nav-link" type="button" data-sandbox="vbucks">V-Bucks</button><button class="nav-link" type="button" data-page="library">Library</button><details class="more-menu"><summary>Explore<svg class="explore-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5"/></svg></summary><div class="more-menu-panel"><button class="nav-link" type="button" data-page="news">News</button><button class="nav-link" type="button" data-page="map">Map</button><button class="nav-link" type="button" data-page="modes">Modes</button><button class="nav-link" type="button" data-view="new">New today</button>
         <button class="nav-link nav-favorites" type="button" data-view="favorites">My List <span class="fav-count" id="fav-count" hidden>0</span></button></div></details>
       </nav>
       <div class="header-actions">
@@ -71,7 +71,7 @@
       <div class="hero-bottom page-width"><span id="hero-caption">DAILY ROTATION</span><div class="hero-timer"><svg class="icon"><use href="#i-clock"/></svg><span>New shop in</span><strong id="hero-countdown">--:--:--</strong></div></div>
     </section>
 
-    <button type="button" id="filter-toggle" class="filter-toggle" aria-label="Show shop filters" aria-expanded="false">☰</button><nav id="section-rail" class="section-rail" aria-label="Shop sections"></nav><section class="shop-shell page-width" id="shop-content" aria-label="Item shop listings">
+    <button type="button" id="filter-toggle" class="filter-toggle" aria-label="Show shop filters" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/></svg><span>Filters</span><b id="filter-count" hidden>0</b></button><nav id="section-rail" class="section-rail" aria-label="Shop sections"></nav><section class="shop-shell page-width" id="shop-content" aria-label="Item shop listings">
       <div class="section-intro">
         <div><p class="eyebrow-small" id="section-overline">ASHLAN SANDBOX</p><h2 id="section-heading">Item Shop</h2></div><button class="button button-primary" id="get-vbucks" type="button">Ⓥ Get V-Bucks</button>
         <div class="shop-summary"><span class="status-pill" id="status-pill"><span class="status-light"></span><span id="status-label">Connecting</span></span><span class="summary-sep"></span><span id="item-count">Loading items</span></div>
@@ -85,6 +85,7 @@
         <button type="button" class="category" data-filter="music">Jam Tracks</button><button type="button" class="category" data-filter="car">Vehicles</button><button type="button" class="category" data-filter="instrument">Instruments</button><button type="button" class="category" data-filter="other">More</button>
         <div class="category-end"><button class="sort-button" type="button" id="sort-button" aria-label="Change sort order"><span id="sort-label">Shop order</span><svg class="icon"><use href="#i-chevron"/></svg></button></div>
       </div>
+      <div class="advanced-filters" id="advanced-filters"><div class="filter-fields"><label>Section<select id="filter-section"><option value="">All sections</option></select></label><label>Rarity / series<select id="filter-rarity"><option value="">All rarities</option></select></label><label>V-Bucks<select id="filter-price"><option value="">Any price</option><option value="0:500">Up to 500</option><option value="501:1000">501 – 1,000</option><option value="1001:1500">1,001 – 1,500</option><option value="1501:2500">1,501 – 2,500</option><option value="2501:999999">Over 2,500</option></select></label><label>Collection<select id="filter-collection"><option value="">Everything</option><option value="owned">Owned</option><option value="unowned">Not owned</option><option value="new">Added today</option><option value="sale">On sale</option></select></label><label>Preview<select id="filter-media"><option value="">Any item</option><option value="animation">Official animation</option><option value="audio">Audio preview</option><option value="any">Any preview</option></select></label><label>Sort by<select id="filter-sort"><option value="shop">Shop order</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="az">Name: A–Z</option><option value="leaving">Leaving soon</option></select></label></div><div class="filter-panel-bottom"><span id="filter-results" role="status"></span><button id="reset-filters" type="button">Reset filters</button></div></div>
       <div class="notice" id="notice" hidden><svg class="icon"><use href="#i-info"/></svg><span id="notice-text"></span><button id="retry-button" class="notice-retry" type="button">Try again</button></div>
       <div class="shop-results" id="shop-results" aria-live="polite" aria-busy="true"><div class="skeleton-row"><div class="skeleton-heading"></div><div class="skeleton-cards"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div><div class="skeleton-row"><div class="skeleton-heading"></div><div class="skeleton-cards"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div></div>
     </section>
@@ -110,8 +111,8 @@
       </div>
     </div>
   </div>
-  <aside id="audio-player" class="audio-player" aria-label="Audio preview player" hidden><img id="player-art" alt=""><div class="player-copy"><strong id="player-title"></strong><span id="player-artist"></span></div><audio id="track-audio" controls preload="none"></audio><button id="player-close" class="icon-button" aria-label="Close audio preview">×</button></aside><div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="./app.js" defer></script><script src="./explore.js" defer></script><script src="./wallet.js" defer></script><script src="./sandbox.js" defer></script>
+  <aside id="audio-player" class="audio-player" aria-label="Audio preview player" hidden><img id="player-art" alt=""><div class="player-copy"><strong id="player-title"></strong><span id="player-artist"></span></div><audio id="track-audio" preload="none"></audio><button id="player-toggle" class="player-toggle" type="button" aria-label="Pause preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><div class="player-timeline"><input id="player-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Preview position" disabled><div><span id="player-elapsed">0:00</span><span id="player-duration">0:00</span></div></div><button id="player-mute" class="player-mute" type="button" aria-label="Mute preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4ZM15 8q5 4 0 8M18 5q8 7 0 14"/></svg></button><input id="player-volume" type="range" min="0" max="1" value="1" step="0.05" aria-label="Preview volume"><button id="player-close" class="icon-button" aria-label="Close audio preview">×</button></aside><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js?v=8" defer></script><script src="./explore.js?v=8" defer></script><script src="./wallet.js?v=8" defer></script><script src="./sandbox.js?v=8" defer></script>
 </body>
 </html>
 

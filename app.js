@@ -9,6 +9,25 @@
   const MAX_CACHE_AGE = 72 * 60 * 60 * 1000;
   const libraryItems = new Map();
   const ANIMATIONS={
+    "CID_744_Athena_Commando_F_DuckHero":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/PQQx06mn_G24ntC97FHvedM4bXtxd2RdsRD5_Jq8Md8/webm-lg",
+    "Character_CasualCherie":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/WRHHhcb50uj6FpTSdnKBPJsbD6fiDtTQjuEaG7mw96E/webm-lg",
+    "Character_HappyHopper":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/NGnlj5dNOnGDLEtdFWqQa6ciPuatDb16C2F4eIB53gg/webm-lg",
+    "CID_741_Athena_Commando_F_HalloweenBunnySpring":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/PXarlnUBy0e5RZFCv7XrkhgX6pchtPrEJzbPbqqJpsI/webm-lg",
+    "Character_GiraffeScallion":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/tsStSKzBOCH7zzquz7ICPOMuvXmQfKHGuGOWXjl6_yU/webm-lg",
+    "EID_GiraffeScallion":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/LjR74-rguXFJg3od-Q8OVNdxS6RUa1I8IFez1u3ucO4/webm-lg",
+    "EID_PintPiano":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/AGgIhHLq1xxWDVCWwfGSTtfguVZlrxfgLduePGW1wHs/webm-lg",
+    "EID_Aerobics":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/gxwujIXWctowNsY99n00PxNx1JwMg4FIXH4dLsdg8JM/webm-lg",
+    "Character_ByteGear":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/yoVCN-SW5ucaO7VXCvHpibt98JJ34j-BEfswS3lL9Yo/webm-lg",
+    "EID_RageQuit":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/c4wsY_hmfDjgnCL5vJbvUuTb0t0RQPLnujxhrlK4xwo/webm-lg",
+
+    "CID_170_Athena_Commando_F_Luchador":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/DvQM11lP-L2Maw065CloORVnYl16p0FnHEZUmsbuVY4/webm-lg",
+    "CID_397_Athena_Commando_F_TreasureHunterFashion":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/vzKvPKHFi8RU3AVhpo5ZJJNBpG04Ok1JmMgOFAKVf2w/webm-lg",
+    "Character_Jumpsuit_Scrap_Mutable":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/wLPrdHL8Jt9ZFyooAVukCVISCjIKr2Hgoo376JWHnBE/webm-lg",
+    "CID_124_Athena_Commando_F_AuroraGlow":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/Of9pBO7DQXG95Cz_wPltdPbHYv36LXkfaaiA_06fty0/webm-lg",
+    "Character_DimeAviator":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/DLVsOtKnDFFG5kze1CWzUwD-FsnjaUSbh3m_C29yUVQ/webm-lg",
+    "Character_SolidMist":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/YGXWeEk_DckCeOJe4SbKtD82CuvmwvPZ6UrnRNB5SWU/webm-lg",
+    "Character_MoralKoreLine":"https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/YlBFmeQQSciX8LMK923kNuXx8eU3Yj5t7D4p9r-aFJQ/webm-lg",
+
     EID_AsideDepot:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/H3HgEEdjx5BVpeSiPN79oCZUqqqiVEiGxtoBxZT26cU/webm-lg',
     EID_AsideDepotStair:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/Pu1VreW3GXYc6S8qf8YG8T9xFcU8ACZ7M-pgLS8lBF0/webm-lg',
     EID_CargoLying:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/UyE3NfCPV0yf0wSFezQ4z1xDQLMBYQ-KkK5ovu9z_Wg/webm-lg',
@@ -31,7 +50,7 @@
   const itemAt = index => index < 0 ? libraryItems.get(index) : state.items[index];
 
   const $ = (id) => document.getElementById(id);
-  const state = { items: [], view: 'shop', filter: 'all', query: '', sort: 'shop', featured: null, active: null, favorites: new Set(), shopDate: null, live: false, fetching: false, toastTimer: null, lastFocused: null };
+  const state = { items: [], view: 'shop', filter: 'all', query: '', sort: 'shop', advanced:{section:'',rarity:'',price:'',collection:'',media:''}, featured: null, active: null, favorites: new Set(), shopDate: null, live: false, fetching: false, toastTimer: null, lastFocused: null };
   const ui = {
     header: $('header'), hero: $('hero'), heroArt: $('hero-art'), heroGlow: $('hero-glow'), heroBackdrop: $('hero-backdrop'), heroTitle: $('hero-title'), heroDescription: $('hero-description'), heroType: $('hero-type'), heroPrice: $('hero-price'), heroDate: $('hero-date'), heroCaption: $('hero-caption'), heroCountdown: $('hero-countdown'), heroInfo: $('hero-info'), results: $('shop-results'), itemCount: $('item-count'), statusPill: $('status-pill'), statusLabel: $('status-label'), heading: $('section-heading'), overline: $('section-overline'), notice: $('notice'), noticeText: $('notice-text'), search: $('search'), modal: $('modal'), modalPanel: $('modal-panel'), modalArtFrame: $('modal-art-frame'), modalImage: $('modal-image'), modalTitle: $('modal-title'), modalCategory: $('modal-category'), modalTags: $('modal-tags'), modalDescription: $('modal-description'), modalPrice: $('modal-price'), modalOldPrice: $('modal-old-price'), modalIncludes: $('modal-includes'), includedList: $('included-list'), modalDetails: $('modal-details'), modalSave: $('modal-save'), toast: $('toast')
   };
@@ -229,10 +248,23 @@
       if (state.filter === 'other' && ['outfit','emote','pickaxe','bundle','music','car','instrument'].includes(item.category)) return false;
       if (state.filter !== 'all' && state.filter !== 'other' && item.category !== state.filter) return false;
       if (state.query && !item.search.includes(state.query)) return false;
+      const f=state.advanced;
+      if(f.section&&item.section!==f.section)return false;
+      if(f.rarity&&item.rarity!==f.rarity)return false;
+      if(f.price){const [min,max]=f.price.split(':').map(Number);if(item.price==null||item.price<min||item.price>max)return false;}
+      if(f.collection==='new'&&!item.isNew)return false;
+      if(f.collection==='sale'&&!(item.regular>item.price))return false;
+      if(f.collection==='owned'&&!window.ashlanShop.owns?.(item))return false;
+      if(f.collection==='unowned'&&window.ashlanShop.owns?.(item))return false;
+      if(f.media==='animation'&&!ANIMATIONS[item.cosmeticId])return false;
+      if(f.media==='audio'&&!item.preview)return false;
+      if(f.media==='any'&&!ANIMATIONS[item.cosmeticId]&&!item.preview&&!item.showcase)return false;
       return true;
     });
     if (state.sort === 'low') items = items.sort((a,b) => (a.price ?? Infinity) - (b.price ?? Infinity));
     if (state.sort === 'high') items = items.sort((a,b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
+    if(state.sort==='az')items.sort((a,b)=>a.name.localeCompare(b.name));
+    if(state.sort==='leaving')items.sort((a,b)=>(Date.parse(a.outDate)||Infinity)-(Date.parse(b.outDate)||Infinity));
     return items;
   }
   function cardHTML(item, order) {
@@ -271,16 +303,19 @@
   }
   function renderItems() {
     if (!state.items.length) return;
+    refreshFilterOptions();
     const items = filteredItems();
+    $('filter-results').textContent=`${items.length} of ${state.items.length} items`;
+    const filterCount=Object.values(state.advanced).filter(Boolean).length+Number(state.filter!=='all');$('filter-count').textContent=filterCount;$('filter-count').hidden=!filterCount;
     ui.itemCount.textContent = `${state.items.length} offers`;
     const viewNames={shop:["ASHLAN SANDBOX", "Item Shop"],new:["JUST ADDED",'New Today'],favorites:['SAVED ITEMS','My List']};
     const [overline,heading] = viewNames[state.view]; ui.overline.textContent = overline; ui.heading.textContent = heading;
-    const isRows = state.view === 'shop' && state.filter === 'all' && !state.query && state.sort === 'shop';
+    const isRows = state.view === 'shop' && state.filter === 'all' && !state.query && state.sort === 'shop' && !Object.values(state.advanced).some(Boolean);
     $('section-rail').hidden=!isRows;
     ui.results.innerHTML = !items.length ? renderEmpty() : isRows ? renderRows(items) : renderGrid(items);
     ui.results.setAttribute('aria-busy','false');
     window.dispatchEvent(new Event('ashlan-shop-rendered'));
-    $('clear-filters')?.addEventListener('click',()=>{ state.view='shop';state.filter='all';state.query='';ui.search.value='';state.sort='shop';updateControls();renderItems(); });
+    $('clear-filters')?.addEventListener('click',()=>{state.view='shop';resetFilters();});
     if (isRows) setupRowArrows();
   }
   function setupRowArrows() {
@@ -295,7 +330,8 @@
   function updateControls() {
     document.querySelectorAll('.nav-link[data-view]').forEach(el=>el.classList.toggle('is-active',(!document.body.dataset.page||document.body.dataset.page==='shop')&&el.dataset.view===state.view));
     document.querySelectorAll('.category').forEach(el=>{const selected=el.dataset.filter===state.filter;el.classList.toggle('is-active',selected);el.setAttribute('aria-pressed',String(selected));});
-    $('sort-label').textContent = {shop:'Shop order',low:'Price: low to high',high:'Price: high to low'}[state.sort];
+    $('sort-label').textContent = {shop:'Shop order',low:'Price: low to high',high:'Price: high to low',az:'Name: A–Z',leaving:'Leaving soon'}[state.sort];
+    $('filter-sort').value=state.sort;
   }
   function renderAll() { renderHero();updateControls();renderItems(); }
   function openItem(index) {
@@ -388,12 +424,12 @@
     $('track-audio').pause();
     const target=ANIMATIONS[item.cosmeticId] ? $('modal-media') : $('stage-showcase');
     if(ANIMATIONS[item.cosmeticId]){
-      target.replaceChildren();return;
+      return;
     }else showStageShowcase(item);
   }
   function showStageShowcase(item){
     const target=$('stage-showcase');target.hidden=false;
-    target.innerHTML=`<iframe title="${esc(item.name)} showcase" src="https://www.youtube-nocookie.com/embed/${esc(item.showcase)}?autoplay=1&playsinline=1&rel=0&loop=1&playlist=${esc(item.showcase)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+    target.innerHTML=`<iframe title="${esc(item.name)} showcase" src="https://www.youtube-nocookie.com/embed/${esc(item.showcase)}?autoplay=1&playsinline=1&controls=0&rel=0&loop=1&playlist=${esc(item.showcase)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
     $('modal-media').innerHTML=`<a class="media-note" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=${esc(item.showcase)}">Open video ↗</a>`;
   }
   function renderMedia(item,autoplay=false) {
@@ -401,7 +437,7 @@
     $('stage-showcase').replaceChildren();$('stage-showcase').hidden=true;
     const stage=$('stage-video');stage.pause();stage.removeAttribute('src');stage.hidden=true;
     if(ANIMATIONS[item.cosmeticId]){
-      stage.src=ANIMATIONS[item.cosmeticId];stage.hidden=false;stage.muted=item.category!=='emote';stage.controls=true;stage.play().catch(()=>{stage.muted=true;stage.play().catch(()=>{stage.hidden=true;});});
+      stage.src=ANIMATIONS[item.cosmeticId];stage.hidden=false;stage.muted=item.category!=='emote';stage.controls=false;stage.play().catch(()=>{stage.muted=true;stage.play().then(()=>{if(item.category==='emote'&&state.active===item.index){const sound=document.createElement('button');sound.className='preview-sound button button-outline';sound.textContent='Enable sound';sound.onclick=()=>{stage.muted=false;stage.play().catch(()=>{});sound.remove();};media.append(sound);}}).catch(()=>{stage.hidden=true;});});
       stage.onerror=()=>{stage.hidden=true;};
     }
     if(item.track){
@@ -437,6 +473,7 @@
   }
   $('player-close').addEventListener('click',()=>{$('track-audio').pause();$('track-audio').removeAttribute('src');$('track-audio').load();$('audio-player').hidden=true;});
   window.ashlanShop = {
+    hasAnimation:id=>Boolean(ANIMATIONS[id]),
     current:()=>itemAt(state.active),
     items:()=>state.items,
     refresh:renderItems,
@@ -462,6 +499,32 @@
     close:closeItem
   };
   $('share-item').addEventListener('click',async()=>{const item=itemAt(state.active);if(!item)return;const url=new URL(location.href);url.hash=(item.catalog?'cosmetic=':'item=')+encodeURIComponent(item.id);try{await navigator.clipboard.writeText(url.href);showToast('Item link copied');}catch{showToast('Copy this page URL to share');history.replaceState(null,'',url);}});
+
+  function refreshFilterOptions(){
+    for(const field of ['section','rarity']){const select=$('filter-'+field);const values=[...new Set(state.items.map(i=>i[field]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const signature=values.join('|');if(select.dataset.options===signature)continue;select.dataset.options=signature;select.innerHTML=`<option value="">${field==='section'?'All sections':'All rarities'}</option>`+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');select.value=state.advanced[field];}
+  }
+  function resetFilters(){state.filter='all';state.query='';state.sort='shop';ui.search.value='';Object.keys(state.advanced).forEach(k=>{state.advanced[k]='';$('filter-'+k).value='';});updateControls();renderItems();}
+  for(const field of Object.keys(state.advanced))$('filter-'+field).onchange=e=>{state.advanced[field]=e.target.value;renderItems();};
+  $('filter-sort').onchange=e=>{state.sort=e.target.value;updateControls();renderItems();};$('reset-filters').onclick=resetFilters;
+  const trackAudio=$('track-audio');
+  const timeLabel=n=>Number.isFinite(n)?`${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`:'0:00';
+  function updatePlayer(){
+    const playing=!trackAudio.paused&&!trackAudio.ended;
+    $('player-toggle').setAttribute('aria-label',playing?'Pause preview':'Play preview');
+    $('player-toggle').innerHTML=playing?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg>';
+    const progress=Number.isFinite(trackAudio.duration)&&trackAudio.duration>0?trackAudio.currentTime/trackAudio.duration*100:0;
+    $('player-seek').disabled=!Number.isFinite(trackAudio.duration);$('player-seek').value=progress;$('player-seek').style.setProperty('--progress',progress+'%');
+    $('player-elapsed').textContent=timeLabel(trackAudio.currentTime);$('player-duration').textContent=timeLabel(trackAudio.duration);
+    const muted=trackAudio.muted||trackAudio.volume===0;$('player-mute').classList.toggle('is-muted',muted);$('player-mute').setAttribute('aria-label',muted?'Unmute preview':'Mute preview');$('player-mute').setAttribute('aria-pressed',String(muted));
+    $('player-volume').value=trackAudio.muted?0:trackAudio.volume;$('player-volume').style.setProperty('--progress',(trackAudio.muted?0:trackAudio.volume*100)+'%');
+  }
+  ['play','pause','ended','loadedmetadata','durationchange','timeupdate','volumechange','emptied'].forEach(event=>trackAudio.addEventListener(event,updatePlayer));
+  $('player-toggle').onclick=()=>{if(trackAudio.paused)trackAudio.play().catch(()=>showToast('Preview unavailable. Try another track.'));else trackAudio.pause();};
+  $('player-seek').oninput=e=>{if(Number.isFinite(trackAudio.duration))trackAudio.currentTime=Number(e.target.value)/100*trackAudio.duration;updatePlayer();};
+  $('player-mute').onclick=()=>{trackAudio.muted=!(trackAudio.muted||trackAudio.volume===0);if(!trackAudio.muted&&trackAudio.volume===0)trackAudio.volume=1;};
+  $('player-volume').oninput=e=>{trackAudio.volume=Number(e.target.value);trackAudio.muted=false;};
+  updatePlayer();
+
   readFavorites();wire();updateCountdown();setInterval(updateCountdown,1000);fetchShop().then(()=>{if(location.hash.startsWith('#item=')){const id=decodeURIComponent(location.hash.slice(6));const item=state.items.find(x=>x.id===id);if(item)openItem(item.index);}});
   if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 

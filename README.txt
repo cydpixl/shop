@@ -26,6 +26,11 @@ FORTNITE-STYLE SANDBOX UPDATE
 - Purchases use the current API-listed V-Bucks price, deduct only the local demo balance, and persist in My Locker. Bundle contents count as owned across matching offers.
 - No API key is used. Library, latest additions, unconfirmed unreleased candidates, news, map and playlists remain available.
 - Keyless catalog endpoint: /v2/cosmetics?responseFlags=6. New items: /v2/cosmetics/new. News: /v2/news. Map: /v1/map. Modes: /v1/playlists.
-- Seventeen cosmetics have official animated WebM previews, including Day-o with audio and several rotating outfits. These are rendered animations, not interactive 3D models. Other previews use artwork and supplied YouTube showcases. The separate 3D API endpoint returned 401 without a key, so it is not integrated.
+- Thirty-four cosmetics have official animated WebM previews, including Day-o with audio and several rotating outfits. These are rendered animations, not interactive 3D models. Other previews use artwork and supplied YouTube showcases. The separate 3D API endpoint returned 401 without a key, so it is not integrated.
 - Reference artwork and HeadingNow font are in assets/. Source URLs: https://www.fortnite.com/item-shop and https://www.fortnite.com/item-shop/v-bucks . All trademarks and artwork belong to their respective owners. This is an unofficial fan sandbox.
 - Run validation: node --test tests/wallet.test.cjs
+
+PLAYBACK AND FILTER UPDATE
+- Official videos autoplay without native control overlays; Jam Track playback uses custom pause/play, seek, mute and volume controls. Browser-blocked audio offers an Enable sound action.
+- Shop filters combine item category, section, rarity/series, V-Bucks price range, owned/unowned, new/sale status and preview type. Sorting includes price, name and leaving soon.
+- Cosmetic Library supports category, type, rarity/series and name/date sorting with search.

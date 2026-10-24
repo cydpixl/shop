@@ -5,7 +5,7 @@
   const url=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:'';}catch{return '';}};
   const date=value=>value?new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}):'Not supplied';
   const data={},pending={};
-  let page='shop',libraryFilter='all',kind='all',query='',limit=60,library=[],newsKind='br',modeFilter='default',mapLabels=true,zoom=1;
+  let page='shop',libraryFilter='all',kind='all',libraryType='',libraryRarity='',librarySort='latest',query='',limit=60,library=[],newsKind='br',modeFilter='default',mapLabels=true,zoom=1;
   const endpoints={library:'/v2/cosmetics?responseFlags=6',new:'/v2/cosmetics/new',news:'/v2/news',map:'/v1/map',modes:'/v1/playlists'};
   async function load(key){
     if(data[key])return data[key];
@@ -31,8 +31,12 @@
   }
   const kindName={br:'Battle Royale',tracks:'Jam Tracks',instruments:'Instruments',cars:'Vehicles',lego:'LEGO styles',legoKits:'LEGO kits',beans:'Bean styles'};
   function buildLibrary(){
-    shell.innerHTML=heading('Cosmetic Library',`${library.length.toLocaleString()} items across Fortnite. Updated ${date(data.new.lastAdditions?.all||data.new.date)}.`)+`<div class="explore-toolbar"><label class="explore-search">Search library<input id="library-search" type="search" placeholder="Name, artist, set, or rarity" autocomplete="off"></label><label>Category<select id="library-kind"><option value="all">All categories</option>${Object.entries(kindName).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></label></div><div class="explore-tabs" aria-label="Library collection">${[['all','All cosmetics'],['new','New items'],['unreleased','Unreleased candidates'],['saved','Saved']].map(([k,n])=>`<button type="button" data-library-filter="${k}" aria-pressed="${k===libraryFilter}">${n}</button>`).join('')}</div><p id="library-note" class="explore-note"></p><div id="library-summary" class="explore-summary" role="status"></div><div id="library-grid" class="card-grid library-grid"></div><button id="library-more" class="button button-outline load-more">Load more items</button>`;
+    shell.innerHTML=heading('Cosmetic Library',`${library.length.toLocaleString()} items across Fortnite. Updated ${date(data.new.lastAdditions?.all||data.new.date)}.`)+`<div class="explore-toolbar"><label class="explore-search">Search library<input id="library-search" type="search" placeholder="Name, artist, set, or rarity" autocomplete="off"></label><label>Category<select id="library-kind"><option value="all">All categories</option>${Object.entries(kindName).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></label><label>Item type<select id="library-type"><option value="">All types</option>${[...new Set(library.map(x=>x.raw.type?.displayValue).filter(v=>v&&v!=='null'&&v.length<30))].sort().map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select></label><label>Rarity / series<select id="library-rarity"><option value="">All rarities</option>${[...new Set(library.map(x=>x.raw.series?.value||x.raw.rarity?.displayValue).filter(Boolean))].sort().map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select></label><label>Sort by<select id="library-sort"><option value="latest">Latest added</option><option value="az">Name: A–Z</option><option value="za">Name: Z–A</option></select></label></div><div class="explore-tabs" aria-label="Library collection">${[['all','All cosmetics'],['new','New items'],['unreleased','Unreleased candidates'],['saved','Saved']].map(([k,n])=>`<button type="button" data-library-filter="${k}" aria-pressed="${k===libraryFilter}">${n}</button>`).join('')}</div><p id="library-note" class="explore-note"></p><div id="library-summary" class="explore-summary" role="status"></div><div id="library-grid" class="card-grid library-grid"></div><button id="library-more" class="button button-outline load-more">Load more items</button>`;
     document.getElementById('library-kind').value=kind;
+    for(const [id,value] of [['library-type',libraryType],['library-rarity',libraryRarity],['library-sort',librarySort]])document.getElementById(id).value=value;
+    document.getElementById('library-type').onchange=e=>{libraryType=e.target.value;limit=60;renderLibrary();};
+    document.getElementById('library-rarity').onchange=e=>{libraryRarity=e.target.value;limit=60;renderLibrary();};
+    document.getElementById('library-sort').onchange=e=>{librarySort=e.target.value;limit=60;renderLibrary();};
     document.getElementById('library-search').oninput=e=>{query=e.target.value.toLowerCase().trim();limit=60;renderLibrary();};
     document.getElementById('library-kind').onchange=e=>{kind=e.target.value;limit=60;renderLibrary();};
     shell.querySelectorAll('[data-library-filter]').forEach(b=>b.onclick=()=>{libraryFilter=b.dataset.libraryFilter;limit=60;renderLibrary();});
@@ -44,11 +48,14 @@
     if(page!=='library'||!document.getElementById('library-grid'))return;
     const items=library.filter(item=>{
       if(kind!=='all'&&item.kind!==kind)return false;if(query&&!item.search.includes(query))return false;
+      if(libraryType&&item.raw.type?.displayValue!==libraryType)return false;
+      if(libraryRarity&&(item.raw.series?.value||item.raw.rarity?.displayValue)!==libraryRarity)return false;
       if(libraryFilter==='new'&&!item.new)return false;
       if(libraryFilter==='saved'&&!window.ashlanShop.isSaved(item.kind,item.raw.id))return false;
       if(libraryFilter==='unreleased')return item.kind==='br'&&!item.raw.shopHistory?.length&&item.raw.gameplayTags?.includes('Cosmetics.Source.ItemShop')&&!window.ashlanShop.inShop(item.raw.id);
       return true;
     });
+    if(librarySort!=='latest')items.sort((a,b)=>(librarySort==='az'?1:-1)*a.name.localeCompare(b.name));
     document.getElementById('library-note').textContent=libraryFilter==='unreleased'?'No recorded shop appearance. Release status unconfirmed.':libraryFilter==='new'?`Latest additions (${date(data.new.date)}), including items not currently sold in the shop.`:'';
     shell.querySelectorAll('[data-library-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.libraryFilter===libraryFilter)));
     document.getElementById('library-summary').textContent=`${items.length.toLocaleString()} results · showing ${Math.min(limit,items.length).toLocaleString()}`;
