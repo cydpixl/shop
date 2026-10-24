@@ -50,7 +50,7 @@
   $('purchase-item').onclick=()=>{
     const item=window.ashlanShop.current();if(!item)return;
     if(wallet.read().balance<item.price){returnItem=JSON.parse(JSON.stringify(item));show('vbucks');return;}
-    try{wallet.purchase(item);update();notify(`${item.name} added to your locker`);}catch(error){notify(error.message);}
+    try{wallet.purchase(item);window.ashlanShop.refresh();update();notify(`${item.name} added to your locker`);}catch(error){notify(error.message);}
   };
   $('wallet-balance').onclick=()=>{returnItem=null;show('vbucks');};$('get-vbucks').onclick=()=>{returnItem=null;show('vbucks');};
   $('filter-toggle').onclick=()=>{const open=document.body.classList.toggle('filters-open');$('filter-toggle').setAttribute('aria-expanded',String(open));$('filter-toggle').setAttribute('aria-label',open?'Hide shop filters':'Show shop filters');};

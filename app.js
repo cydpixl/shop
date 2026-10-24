@@ -437,8 +437,8 @@
     $('stage-showcase').replaceChildren();$('stage-showcase').hidden=true;
     const stage=$('stage-video');stage.pause();stage.removeAttribute('src');stage.hidden=true;
     if(ANIMATIONS[item.cosmeticId]){
-      stage.src=ANIMATIONS[item.cosmeticId];stage.hidden=false;stage.muted=item.category!=='emote';stage.controls=false;stage.play().catch(()=>{stage.muted=true;stage.play().then(()=>{if(item.category==='emote'&&state.active===item.index){const sound=document.createElement('button');sound.className='preview-sound button button-outline';sound.textContent='Enable sound';sound.onclick=()=>{stage.muted=false;stage.play().catch(()=>{});sound.remove();};media.append(sound);}}).catch(()=>{stage.hidden=true;});});
-      stage.onerror=()=>{stage.hidden=true;};
+      stage.src=ANIMATIONS[item.cosmeticId];stage.hidden=false;stage.muted=item.category!=='emote';stage.controls=false;stage.play().catch(()=>{if(state.active!==item.index||stage.getAttribute('src')!==ANIMATIONS[item.cosmeticId])return;stage.muted=true;stage.play().then(()=>{if(item.category==='emote'&&state.active===item.index){const sound=document.createElement('button');sound.className='preview-sound button button-outline';sound.textContent='Enable sound';sound.onclick=()=>{stage.muted=false;stage.play().catch(()=>{});sound.remove();};media.append(sound);}}).catch(()=>{stage.hidden=true;});});
+      stage.onerror=()=>{if(state.active===item.index&&stage.getAttribute('src')===ANIMATIONS[item.cosmeticId])stage.hidden=true;};
     }
     if(item.track){
       media.innerHTML=item.preview?`<button class="button button-primary" id="preview-track">▶ Play preview</button>`:`<p class="media-note">Preview unavailable.</p>`;
