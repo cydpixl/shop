@@ -1,0 +1,11 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {createWallet}=require('../wallet.js');
+const setup=()=>{const data=new Map();const storage={getItem:key=>data.get(key)||null,setItem:(key,value)=>data.set(key,value)};return {storage,wallet:createWallet(storage)};};
+const item=(id,price,keys=[id])=>({id,name:id,price,ownershipKeys:keys});
+test('free packs add exactly their amounts and persist across instances',()=>{const {storage,wallet}=setup();assert.equal(wallet.read().balance,0);for(const amount of [800,2400,4500,12500])wallet.topUp(amount);assert.equal(createWallet(storage).read().balance,20200);assert.throws(()=>wallet.topUp(1000));});
+test('insufficient funds cannot create an item or a negative balance',()=>{const {wallet}=setup();wallet.topUp(800);assert.throws(()=>wallet.purchase(item('a',1200)));assert.equal(wallet.read().balance,800);assert.equal(wallet.read().purchases.length,0);});
+test('purchase deducts the listed price and is owned after reloading',()=>{const {storage,wallet}=setup();wallet.topUp(2400);wallet.purchase(item('a',1200));const reload=createWallet(storage);assert.equal(reload.read().balance,1200);assert.equal(reload.read().purchases.length,1);assert.equal(reload.owns(item('a',1200)),true);assert.throws(()=>reload.purchase(item('a',1200)));assert.equal(reload.read().balance,1200);});
+test('bundle contents are owned across different offers',()=>{const {wallet}=setup();wallet.topUp(4500);wallet.purchase(item('bundle',2400,['outfit','pickaxe']));assert.equal(wallet.owns(item('outfit-offer',1500,['outfit'])),true);assert.throws(()=>wallet.purchase(item('pickaxe-offer',800,['pickaxe'])));assert.equal(wallet.read().balance,2100);});
+test('invalid prices and invalid saved balances are rejected',()=>{const {storage,wallet}=setup();for(const price of [null,-1,NaN,Infinity,1.5])assert.throws(()=>wallet.purchase(item('bad',price)));storage.setItem(wallet.key,JSON.stringify({balance:-10,purchases:[]}));assert.equal(wallet.read().balance,0);});
+test('storage failure leaves purchases and balance unmodified',()=>{const {storage,wallet}=setup();wallet.topUp(2400);storage.setItem=()=>{throw Error('Storage full');};assert.throws(()=>wallet.purchase(item('a',1200)));assert.equal(wallet.read().balance,2400);assert.equal(wallet.read().purchases.length,0);});

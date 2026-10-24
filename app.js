@@ -3,10 +3,32 @@
 
   const API_URL = 'https://fortnite-api.com/v2/shop?language=en&responseFlags=7';
   const TRACKS_URL = 'https://raw.githubusercontent.com/FNFestival/fnfestival.github.io/main/data/tracks.json';
-  const CACHE_KEY = 'ashlan-shop-cache-v3';
+  const CACHE_KEY = 'ashlan-shop-cache-v6';
   const FAVORITES_KEY = 'pixl-shop-favorites-v2';
   const VBUCK_FALLBACK = 'https://fortnite-api.com/images/vbuck.png';
   const MAX_CACHE_AGE = 72 * 60 * 60 * 1000;
+  const libraryItems = new Map();
+  const ANIMATIONS={
+    EID_AsideDepot:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/H3HgEEdjx5BVpeSiPN79oCZUqqqiVEiGxtoBxZT26cU/webm-lg',
+    EID_AsideDepotStair:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/Pu1VreW3GXYc6S8qf8YG8T9xFcU8ACZ7M-pgLS8lBF0/webm-lg',
+    EID_CargoLying:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/UyE3NfCPV0yf0wSFezQ4z1xDQLMBYQ-KkK5ovu9z_Wg/webm-lg',
+    Character_FonduePaper:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/bGBJiGRWQRPYjChCL9BEKhwDxCZ7fYIN9X6EV4hbou0/webm-lg',
+    EID_ZombieWalk:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/32750jOXYbs6NrDqUHbCoDBTRq4ivBhcGs_L2HbP5Mc/webm-lg',
+    EID_CoffinBooBox:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/4OPLZjROU1t44IaMtIUDPmNtGJ_RpF32XxpExKmbFZk/webm-lg',
+    Character_SugarBrain:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/rXdohYmnvE7r4qxRwh-Le7lvFzb4BiKfrVjF9xIQgug/webm-lg',
+    Character_PumpkinSkeleton:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/639IcfUjW1bFQ7R-NJAwaK6oB71T0zAkBASCMHz4Exc/webm-lg',
+    CID_244_Athena_Commando_M_PumpkinSuit:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/0B2ENAqbfN9ddQoxpauNcTYTmeR-s8Vlgj69ZBriy5s/webm-lg',
+    CID_256_Athena_Commando_M_Pumpkin:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/--O3Ga8L4qe70IGTiz-u7HzlM2sWTxzK91qvAlFJpeI/webm-lg',
+    EID_GuardHence:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/5rer1cTOV06Eq7Bs3oXPrbShRuZxyZpy9sFUfZ-JLPw/webm-lg',
+    EID_TearErrand:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/JGtYj0QGGDZ-43p9-YT7M0WwxajyM71FAckc_jUimIs/webm-lg',
+    EID_AcidWhale:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/XXPsPf2EsX8_4UXDCcWFWmxKao6GkX06iQtj88LRNlM/webm-lg',
+    EID_SmoothGriffin:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/mAJv8vKE5THm313pFFAU4tJSTesO9X6WYkwlbIcQi1o/webm-lg',
+    EID_CarryMazeFlap:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/M66o0CSjFr22B4uT6RHXEqO__UAGj7jAoZRuUMteBcE/webm-lg',
+
+    Character_AsideDepot:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/km3JQT9rhuJxmcrHuRHaOGuOEGRTSGMLqKznLXK-Tr0/webm-lg',
+    Character_CargoLying:'https://cosmo.fdeb.live.use1a.on.epicgames.com/v1/item/Yr4_CjhAJK91kX4vdB1Q8A2hMYHEmXUy-KYLE9A3SVw/webm-lg'
+  };
+  const itemAt = index => index < 0 ? libraryItems.get(index) : state.items[index];
 
   const $ = (id) => document.getElementById(id);
   const state = { items: [], view: 'shop', filter: 'all', query: '', sort: 'shop', featured: null, active: null, favorites: new Set(), shopDate: null, live: false, fetching: false, toastTimer: null, lastFocused: null };
@@ -39,7 +61,7 @@
   }
   function categoryFor(entry) {
     if (entry.bundle && entry.bundle.name) return 'bundle';
-    if (entry.brItems?.length > 1) return 'bundle';
+
     const type = String(entry.brItems?.[0]?.type?.value || '').toLowerCase();
     if (type === 'outfit') return 'outfit';
     if (['emote','emoji','spray'].includes(type)) return 'emote';
@@ -60,12 +82,13 @@
     const display = entry.newDisplayAsset || {};
     const bundle = entry.bundle || null;
     const content = [...brItems, ...tracks, ...instruments, ...cars];
-    const name = bundle?.name || display?.displayName || (category === 'bundle' && content.length > 1 ? (primary?.name ? primary.name + ' Bundle' : '') : '') || primary?.name || tracks[0]?.title || instruments[0]?.name || cars[0]?.name || entry.devName?.replace(/^\[VIRTUAL\]/,'').slice(0,54) || 'Item Shop Offer';
+    const name = bundle?.name || primary?.name || tracks[0]?.title || instruments[0]?.name || cars[0]?.name || display?.displayName || entry.devName?.replace(/^\[VIRTUAL\]/,'').slice(0,54) || 'Item Shop Offer';
     const section = entry.layout?.name || 'More in the Shop';
-    const image = safeImage(display.renderImages?.find(x => x?.image)?.image) || safeImage(bundle?.image) || safeImage(primary?.images?.featured) || safeImage(primary?.images?.icon) || safeImage(tracks[0]?.albumArt) || safeImage(instruments[0]?.images?.large) || safeImage(instruments[0]?.images?.icon) || safeImage(cars[0]?.images?.large) || safeImage(cars[0]?.images?.icon) || '';
+    const brRender=display.renderImages?.find(x=>x.productTag==='Product.BR'&&x.image)?.image;
+    const image = safeImage(bundle?.image) || (primary ? safeImage(brRender)||safeImage(primary.images?.featured)||safeImage(primary.images?.icon) : safeImage(tracks[0]?.albumArt)||safeImage(instruments[0]?.images?.large)||safeImage(instruments[0]?.images?.icon)||safeImage(cars[0]?.images?.large)||safeImage(cars[0]?.images?.icon)) || safeImage(display.renderImages?.find(x=>x?.image)?.image) || '';
     const fallbackImage = safeImage(primary?.images?.icon) || safeImage(tracks[0]?.albumArt) || safeImage(instruments[0]?.images?.icon) || safeImage(cars[0]?.images?.icon) || '';
     const description = primary?.description || bundle?.info || tracks[0]?.artist || '';
-    const typeLabel = category === 'bundle' ? 'Bundle' : primary?.type?.displayValue || (tracks.length ? 'Jam Track' : instruments.length ? 'Instrument' : cars.length ? 'Vehicle' : 'Shop Item');
+    const typeLabel = category === 'bundle' ? 'Bundle' : (primary?.type?.displayValue ? primary.type.displayValue+(content.length>1?' + Bonus':'') : '') || (tracks.length ? 'Jam Track' : instruments.length ? 'Instrument' : cars.length ? 'Vehicle' : 'Shop Item');
     const rarity = primary?.series?.value || primary?.rarity?.displayValue || '';
     const price = typeof entry.finalPrice === 'number' ? entry.finalPrice : null;
     const regular = typeof entry.regularPrice === 'number' ? entry.regularPrice : null;
@@ -73,8 +96,10 @@
     const dateOnly = String(addedDate).slice(0, 10);
     const todayOnly = String(shopDate || '').slice(0, 10);
     const isNew = Boolean(dateOnly && todayOnly && dateOnly === todayOnly);
-    const contentItems = content.map((item) => ({ name: item.name || item.title || 'Item', image: safeImage(item.images?.icon) || safeImage(item.albumArt) || safeImage(item.images?.smallIcon) || '' }));
+    const contentItems = content.map((item) => ({ id:item.id, name: item.name || item.title || 'Item', image: safeImage(item.images?.icon) || safeImage(item.albumArt) || safeImage(item.images?.smallIcon) || '' }));
     return {
+      ownershipKeys:content.map(x=>x.id).filter(Boolean),tileSize:entry.tileSize||'',
+      isFirstRelease:Boolean(primary?.shopHistory?.[0]&&primary.shopHistory[0].slice(0,10)===todayOnly),
       id: String(entry.offerId || 'offer-' + index), index, name: String(name).replace(/\\u([0-9a-fA-F]{4})/g,(_,h)=>String.fromCharCode(parseInt(h,16))).replace(/\\_/g,'_'), section: String(section), sectionOrder: Number(entry.layout?.index ?? 999), layoutRank: Number(entry.layout?.rank ?? 999), image, fallbackImage, price, regular, typeLabel, category, rarity, description: String(description), isNew, inDate: addedDate, outDate: entry.outDate || '', colors: [hexColor(entry.colors?.color1,'#514554'), hexColor(entry.colors?.color2 || entry.colors?.color3,'#242327')], contentItems, search: '',
       track: tracks[0] || null, cosmeticId: primary?.id || null, showcase: primary?.showcaseVideo || null, introduction: primary?.introduction?.text || '', set: primary?.set?.value || '', variants: primary?.variants || [], history: primary?.shopHistory || [], giftable: entry.giftable,
     };
@@ -92,13 +117,16 @@
   function readFavorites() {
     try { const list = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); if (Array.isArray(list)) state.favorites = new Set(list.filter(x => typeof x === 'string').slice(0,2000)); } catch { /* ignore */ }
     updateFavCount();
+    try { for(const item of JSON.parse(localStorage.getItem('ashlan-library-saved')||'[]')){if(item?.catalog&&item.id){item.index=-(libraryItems.size+1);libraryItems.set(item.index,item);}} }catch{}
   }
   function updateFavCount() { const el = $('fav-count'); el.textContent = state.favorites.size; el.hidden = !state.favorites.size; }
   function toggleFavorite(index) {
-    const item = state.items[index]; if (!item) return;
+    const item = itemAt(index); if (!item) return;
     const saved = state.favorites.has(item.id);
     if (saved) state.favorites.delete(item.id); else state.favorites.add(item.id);
     try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...state.favorites])); } catch { /* storage unavailable */ }
+    try {localStorage.setItem('ashlan-library-saved',JSON.stringify([...libraryItems.values()].filter(x=>state.favorites.has(x.id))));}catch{}
+    window.dispatchEvent(new Event('ashlan-favorites-changed'));
     updateFavCount();
     if (state.view === 'favorites') renderItems();
     else document.querySelectorAll(`[data-heart="${index}"]`).forEach((el) => { el.classList.toggle('is-saved',!saved); el.setAttribute('aria-label',`${saved?'Save':'Remove'} ${item.name} ${saved?'to':'from'} My List`); });
@@ -194,7 +222,8 @@
     }
   }
   function filteredItems() {
-    let items = state.items.filter(item => {
+    const source = state.view==='favorites' ? [...state.items,...libraryItems.values()] : state.items;
+    let items = source.filter(item => {
       if (state.view === 'favorites' && !state.favorites.has(item.id)) return false;
       if (state.view === 'new' && !item.isNew) return false;
       if (state.filter === 'other' && ['outfit','emote','pickaxe','bundle','music','car','instrument'].includes(item.category)) return false;
@@ -211,7 +240,7 @@
     const price = vbucks(item.price);
     const old = item.regular != null && item.price != null && item.regular > item.price ? `<span class="price-old">${item.regular.toLocaleString('en-US')}</span>` : '';
     const image = item.image ? `<img class="item-art" src="${esc(item.image)}" data-fallback-image="${esc(item.fallbackImage || '')}" alt="${esc(item.name)}" loading="lazy" decoding="async">` : `<div class="card-no-art">${icon('bag')}</div>`;
-    return `<article class="item-card ${item.track?'is-track':''}" role="button" tabindex="0" aria-label="View ${esc(item.name)} details" data-open="${item.index}" style="--item-light:${item.colors[0]};--item-dark:${item.colors[1]};animation-delay:${Math.min(order,8)*22}ms"><div class="item-bg"></div>${image}<div class="item-scrim"></div>${item.isNew ? '<span class="card-new">ADDED TODAY</span>' : ''}<button class="card-heart ${saved?'is-saved':''}" type="button" data-heart="${item.index}" aria-label="${saved?'Remove':'Save'} ${esc(item.name)} ${saved?'from':'to'} My List" title="${saved?'Remove from':'Save to'} My List">${icon('heart')}</button><div class="item-info"><span class="item-type">${esc(item.track?.artist || item.typeLabel)}</span><span class="item-title">${esc(item.name)}</span><span class="item-price-line">${price}${old}</span></div>${item.preview ? `<button class="card-play" data-play="${item.index}" aria-label="Preview ${esc(item.name)}">▶</button>`:''}</article>`;
+    return `<article class="item-card ${item.track?'is-track':''}" role="button" tabindex="0" aria-label="View ${esc(item.name)} details" data-open="${item.index}" style="--item-light:${item.colors[0]};--item-dark:${item.colors[1]};animation-delay:${Math.min(order,8)*22}ms"><div class="item-bg"></div>${image}<div class="item-scrim"></div>${item.isFirstRelease ? '<span class="card-new">NEW!</span>' : ''}<button class="card-heart ${saved?'is-saved':''}" type="button" data-heart="${item.index}" aria-label="${saved?'Remove':'Save'} ${esc(item.name)} ${saved?'from':'to'} My List" title="${saved?'Remove from':'Save to'} My List">${icon('heart')}</button><div class="item-info"><span class="item-type">${esc(item.track?.artist || item.typeLabel)}</span><span class="item-title">${esc(item.name)}</span><span class="item-price-line">${price}${old}</span></div>${item.preview ? `<button class="card-play" data-play="${item.index}" aria-label="Preview ${esc(item.name)}">▶</button>`:''}</article>`;
   }
   function groupRows(items) {
     const groups = new Map();
@@ -220,11 +249,15 @@
       if (!groups.has(key)) groups.set(key,{name:key,order:item.sectionOrder,rank:item.layoutRank,items:[]});
       groups.get(key).items.push(item);
     }
-    return [...groups.values()].sort((a,b)=>a.order-b.order || a.rank-b.rank || a.name.localeCompare(b.name));
+    return [...groups.values()].sort((a,b)=>Number(b.name.trim()==='Beetlejuice')-Number(a.name.trim()==='Beetlejuice')||a.order-b.order || a.rank-b.rank || a.name.localeCompare(b.name));
   }
   function renderRows(items) {
     const groups = groupRows(items);
-    return groups.map((group,g) => `<section class="shop-row" aria-label="${esc(group.name)}"><div class="row-top"><div class="row-left"><h3 class="row-heading">${esc(group.name)}</h3><span class="row-count">${group.items.length}</span></div><div class="row-controls"><button class="round-nav prev" type="button" data-scroll="${g}" data-dir="-1" aria-label="Scroll ${esc(group.name)} left">${icon('chevron')}</button><button class="round-nav next" type="button" data-scroll="${g}" data-dir="1" aria-label="Scroll ${esc(group.name)} right">${icon('chevron')}</button></div></div><div class="horizontal-track" data-track="${g}">${group.items.map((x,i)=>cardHTML(x,i)).join('')}</div></section>`).join('');
+    $('section-rail').innerHTML=groups.map((group,g)=>`<a href="#section-${g}" title="${esc(group.name)}" aria-label="Jump to ${esc(group.name)}"><span></span><span class="rail-name">${esc(group.name)}</span></a>`).join('');
+    return groups.map((group,g) => {
+      const ordered=[...group.items].sort((a,b)=>Number(b.category==='bundle')-Number(a.category==='bundle')||(a.category==='bundle'&&b.category==='bundle'?b.contentItems.length-a.contentItems.length:0));
+      return `<section class="shop-row" id="section-${g}" aria-label="${esc(group.name)}"><div class="row-top"><div class="row-left"><h3 class="row-heading">${esc(group.name)}</h3><span class="row-count">${group.items.length}</span></div></div><div class="shop-section-grid">${ordered.map((x,i)=>cardHTML(x,i).replace('class="item-card ',`class="item-card ${i===0&&x.category==='bundle'?'feature-tile ':''}`)).join('')}</div></section>`;
+    }).join('');
   }
   function renderGrid(items) {
     const title = state.query ? `Results for “${esc(ui.search.value.trim())}”` : state.view === 'favorites' ? 'My List' : state.view === 'new' ? 'New Today' : state.filter === 'all' ? 'Shop Items' : document.querySelector(`.category[data-filter="${state.filter}"]`)?.textContent || 'Shop Items';
@@ -240,11 +273,13 @@
     if (!state.items.length) return;
     const items = filteredItems();
     ui.itemCount.textContent = `${state.items.length} offers`;
-    const viewNames={shop:["THE DAILY DROP", "Today's Shop"],new:["JUST ADDED",'New Today'],favorites:['SAVED ITEMS','My List']};
+    const viewNames={shop:["ASHLAN SANDBOX", "Item Shop"],new:["JUST ADDED",'New Today'],favorites:['SAVED ITEMS','My List']};
     const [overline,heading] = viewNames[state.view]; ui.overline.textContent = overline; ui.heading.textContent = heading;
     const isRows = state.view === 'shop' && state.filter === 'all' && !state.query && state.sort === 'shop';
+    $('section-rail').hidden=!isRows;
     ui.results.innerHTML = !items.length ? renderEmpty() : isRows ? renderRows(items) : renderGrid(items);
     ui.results.setAttribute('aria-busy','false');
+    window.dispatchEvent(new Event('ashlan-shop-rendered'));
     $('clear-filters')?.addEventListener('click',()=>{ state.view='shop';state.filter='all';state.query='';ui.search.value='';state.sort='shop';updateControls();renderItems(); });
     if (isRows) setupRowArrows();
   }
@@ -258,19 +293,20 @@
     }
   }
   function updateControls() {
-    document.querySelectorAll('.nav-link').forEach(el=>el.classList.toggle('is-active',el.dataset.view===state.view));
+    document.querySelectorAll('.nav-link[data-view]').forEach(el=>el.classList.toggle('is-active',(!document.body.dataset.page||document.body.dataset.page==='shop')&&el.dataset.view===state.view));
     document.querySelectorAll('.category').forEach(el=>{const selected=el.dataset.filter===state.filter;el.classList.toggle('is-active',selected);el.setAttribute('aria-pressed',String(selected));});
     $('sort-label').textContent = {shop:'Shop order',low:'Price: low to high',high:'Price: high to low'}[state.sort];
   }
   function renderAll() { renderHero();updateControls();renderItems(); }
   function openItem(index) {
-    const item=state.items[index]; if (!item) return;
+    const item=itemAt(index); if (!item) return;
+    $('track-audio').pause();
     state.active=index;state.lastFocused=document.activeElement;
     ui.modalTitle.textContent=item.name;
     ui.modalCategory.textContent=(item.section||'ITEM SHOP').toUpperCase();
     ui.modalDescription.textContent=item.description || 'Available in the Fortnite Item Shop.';
     ui.modalTags.innerHTML=[item.typeLabel,item.rarity,item.isNew?'New today':null].filter(Boolean).map(t=>`<span class="modal-tag">${esc(t)}</span>`).join('');
-    ui.modalPrice.innerHTML=vbucks(item.price);
+    ui.modalPrice.innerHTML=item.catalog?'<span class="catalog-availability">'+esc(item.availability)+'</span>':vbucks(item.price);
     ui.modalOldPrice.textContent=item.regular!=null&&item.price!=null&&item.regular>item.price?`${item.regular.toLocaleString('en-US')} V-Bucks`:'';
     ui.modalArtFrame.style.setProperty('--item-light',item.colors[0]);
     ui.modalArtFrame.style.setProperty('--item-dark',item.colors[1]);
@@ -282,24 +318,25 @@
     const details=[['Section',item.section],['Rarity',item.rarity],['Available since',shortDate(item.inDate)],['Leaves shop',shortDate(item.outDate)]].filter(x=>x[1]);
     ui.modalDetails.innerHTML=details.map(([a,b])=>`<div class="detail-row"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join('');
     updateModalSave();
-    renderMedia(item);
+    renderMedia(item,true);
     renderExtraDetails(item);
+    window.dispatchEvent(new CustomEvent('ashlan-item-opened',{detail:item}));
     ui.modal.hidden=false;ui.modal.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
     $('modal-close').focus();
   }
   function updateModalSave() {
-    if (state.active===null) return; const item=state.items[state.active];if(!item)return;
+    if (state.active===null) return; const item=itemAt(state.active);if(!item)return;
     const saved=state.favorites.has(item.id);
     ui.modalSave.innerHTML=`${icon(saved?'check':'heart')}<span>${saved?'Saved to My List':'Save to My List'}</span>`;
   }
-  function closeItem() { if(ui.modal.hidden)return;$('modal-media').replaceChildren();ui.modal.hidden=true;ui.modal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');state.active=null;state.lastFocused?.focus?.(); }
-  function setView(view) { state.view=view; state.filter='all'; state.sort='shop'; state.query=''; ui.search.value=''; updateControls(); renderItems(); $('shop-content').scrollIntoView({behavior:'smooth'}); }
+  function closeItem() { if(ui.modal.hidden)return;$('modal-media').replaceChildren();$('stage-showcase').replaceChildren();$('stage-showcase').hidden=true;$('stage-video').pause();$('stage-video').removeAttribute('src');$('stage-video').load();$('stage-video').hidden=true;ui.modal.hidden=true;ui.modal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');state.active=null;state.lastFocused?.focus?.(); }
+  function setView(view) { closeItem();state.view=view; state.filter='all'; state.sort='shop'; state.query=''; ui.search.value=''; updateControls(); renderItems(); $('shop-content').scrollIntoView({behavior:'smooth'}); }
   function onScroll() {ui.header.classList.toggle('is-scrolled',scrollY>36);}
 
   function wire() {
     window.addEventListener('scroll',onScroll,{passive:true});onScroll();
-    $('brand-link').addEventListener('click',(e)=>{ e.preventDefault();state.view='shop';state.filter='all';state.query='';state.sort='shop';ui.search.value='';updateControls();renderItems();window.scrollTo({top:0,behavior:'smooth'}); });
-    document.querySelectorAll('.nav-link').forEach(x=>x.addEventListener('click',()=>setView(x.dataset.view)));
+    $('brand-link').addEventListener('click',(e)=>{ e.preventDefault();closeItem();state.view='shop';state.filter='all';state.query='';state.sort='shop';ui.search.value='';updateControls();renderItems();window.scrollTo({top:0,behavior:'smooth'}); });
+    document.querySelectorAll('.nav-link[data-view]').forEach(x=>x.addEventListener('click',()=>setView(x.dataset.view)));
     $('header-heart').addEventListener('click',()=>setView('favorites'));
     document.querySelectorAll('.category').forEach(x=>x.addEventListener('click',()=>{state.filter=x.dataset.filter;updateControls();renderItems();}));
     $('sort-button').addEventListener('click',()=>{state.sort=state.sort==='shop'?'low':state.sort==='low'?'high':'shop';updateControls();renderItems();});
@@ -333,33 +370,55 @@
     try {
       catalogPromise ||= fetch(TRACKS_URL,{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('Preview catalog unavailable');return r.json();});
       trackCatalog = await catalogPromise;
+      const activeNeedsPreview=state.active!==null&&itemAt(state.active)?.track&&!itemAt(state.active)?.preview;
       for(const item of state.items){const record=item.track && trackCatalog[item.track.devName];if(record && record.title.toLowerCase()===item.track.title.toLowerCase())item.preview=safeImage(record.previewUrl);}
       renderItems();
-      if(state.active!==null)renderMedia(state.items[state.active]);
+      if(activeNeedsPreview&&state.active!==null)renderMedia(itemAt(state.active),true);
     }catch{catalogPromise=null;}
   }
-  function playTrack(index) {
-    const item=state.items[index];if(!item?.preview)return;
+  function playTrack(index,toggle=true) {
+    const item=itemAt(index);if(!item?.preview)return;
     const audio=$('track-audio');
-    if(audio.src===item.preview&&!audio.paused){audio.pause();return;}
-    audio.src=item.preview;$('player-title').textContent=item.name;$('player-artist').textContent=item.track?.artist||'';$('player-art').src=item.track?.albumArt||item.image;$('audio-player').hidden=false;
+    if(toggle&&audio.src===item.preview&&!audio.paused){audio.pause();return;}
+    if(audio.src!==item.preview)audio.src=item.preview;
+    $('player-title').textContent=item.name;$('player-artist').textContent=item.track?.artist||'';$('player-art').src=item.track?.albumArt||item.image;$('audio-player').hidden=false;
     audio.play().catch(()=>showToast('Preview could not play. Try the play control again.'));
   }
-  function renderMedia(item) {
+  function renderShowcase(item) {
+    $('track-audio').pause();
+    const target=ANIMATIONS[item.cosmeticId] ? $('modal-media') : $('stage-showcase');
+    if(ANIMATIONS[item.cosmeticId]){
+      target.replaceChildren();return;
+    }else showStageShowcase(item);
+  }
+  function showStageShowcase(item){
+    const target=$('stage-showcase');target.hidden=false;
+    target.innerHTML=`<iframe title="${esc(item.name)} showcase" src="https://www.youtube-nocookie.com/embed/${esc(item.showcase)}?autoplay=1&playsinline=1&rel=0&loop=1&playlist=${esc(item.showcase)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+    $('modal-media').innerHTML=`<a class="media-note" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=${esc(item.showcase)}">Open video ↗</a>`;
+  }
+  function renderMedia(item,autoplay=false) {
     const media=$('modal-media');media.replaceChildren();
+    $('stage-showcase').replaceChildren();$('stage-showcase').hidden=true;
+    const stage=$('stage-video');stage.pause();stage.removeAttribute('src');stage.hidden=true;
+    if(ANIMATIONS[item.cosmeticId]){
+      stage.src=ANIMATIONS[item.cosmeticId];stage.hidden=false;stage.muted=item.category!=='emote';stage.controls=true;stage.play().catch(()=>{stage.muted=true;stage.play().catch(()=>{stage.hidden=true;});});
+      stage.onerror=()=>{stage.hidden=true;};
+    }
     if(item.track){
-      media.innerHTML=item.preview?`<button class="button button-primary" id="preview-track">▶ Play audio preview</button><p class="media-note">Music preview · via FNFestival / Spotify</p>`:`<p class="media-note">Audio preview unavailable for this track.</p>`;
+      media.innerHTML=item.preview?`<button class="button button-primary" id="preview-track">▶ Play preview</button>`:`<p class="media-note">Preview unavailable.</p>`;
       $('preview-track')?.addEventListener('click',()=>playTrack(item.index));
+      if(autoplay&&item.preview)playTrack(item.index,false);
     }else if(item.cosmeticId){
-      media.innerHTML='<p class="media-note">Checking showcase availability…</p>';
+      const hasShowcase=/^[\w-]{11}$/.test(item.showcase||'');
+      if(hasShowcase)renderShowcase(item);
+      else if(!ANIMATIONS[item.cosmeticId])media.innerHTML='<p class="media-note">Loading preview…</p>';
       fetch(`https://fortnite-api.com/v2/cosmetics/br/${encodeURIComponent(item.cosmeticId)}?responseFlags=7`,{signal:AbortSignal.timeout(10000)}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(({data})=>{
         if(state.active!==item.index)return;
         Object.assign(item,{history:data.shopHistory||[],variants:data.variants||[],showcase:data.showcaseVideo||item.showcase});renderExtraDetails(item);
         if(/^[\w-]{11}$/.test(item.showcase||'')){
-          media.innerHTML='<button class="button button-outline" id="load-showcase">▶ Watch showcase with audio</button><p class="media-note">Loads YouTube when selected.</p>';
-          $('load-showcase').onclick=()=>{ $('track-audio').pause();media.innerHTML=`<iframe title="${esc(item.name)} showcase" src="https://www.youtube-nocookie.com/embed/${esc(item.showcase)}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><a class="media-note" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=${esc(item.showcase)}">Open showcase on YouTube ↗</a>`; };
-        }else media.innerHTML='<p class="media-note">No audio or video preview supplied for this cosmetic.</p>';
-      }).catch(()=>{if(state.active===item.index)media.innerHTML='<p class="media-note">Showcase is temporarily unavailable.</p>';});
+          if(!hasShowcase)renderShowcase(item);
+        }else if(!ANIMATIONS[item.cosmeticId])media.innerHTML='<p class="media-note">Preview unavailable.</p>';
+      }).catch(()=>{if(state.active===item.index&&!hasShowcase)media.innerHTML='<p class="media-note">Preview unavailable.</p>';});
     }
   }
   function renderExtraDetails(item) {
@@ -371,13 +430,38 @@
     if(styles.length){
       const section=document.createElement('details');section.className='style-options';
       section.innerHTML=`<summary>Preview styles · ${styles.length}</summary><div class="style-grid">${styles.map((option,i)=>`<button type="button" data-style="${i}" aria-label="Preview ${esc(option.name||option.tag||'style')}" title="${esc(option.name||option.tag||'Style')}"><img src="${esc(safeImage(option.image))}" loading="lazy" alt=""><span>${esc(option.name||option.tag||'Style')}</span></button>`).join('')}</div>`;
-      section.addEventListener('click',e=>{const button=e.target.closest('[data-style]');if(!button)return;const option=styles[Number(button.dataset.style)];ui.modalImage.src=safeImage(option.image);ui.modalImage.alt=`${item.name} — ${option.name||'Style'}`;ui.modalImage.hidden=false;});
+      section.addEventListener('click',e=>{const button=e.target.closest('[data-style]');if(!button)return;const option=styles[Number(button.dataset.style)];$('stage-video').pause();$('stage-video').hidden=true;$('stage-showcase').replaceChildren();$('stage-showcase').hidden=true;ui.modalImage.src=safeImage(option.image);ui.modalImage.alt=`${item.name} — ${option.name||'Style'}`;ui.modalImage.hidden=false;});
       ui.modalDetails.append(section);
     }
     if(item.history?.length){const dates=[...new Set(item.history.map(shortDate).filter(Boolean))].reverse();ui.modalDetails.insertAdjacentHTML('beforeend',`<details class="shop-history"><summary>Shop history · ${dates.length} days</summary><p>${dates.map(esc).join(' · ')}</p></details>`);}
   }
   $('player-close').addEventListener('click',()=>{$('track-audio').pause();$('track-audio').removeAttribute('src');$('track-audio').load();$('audio-player').hidden=true;});
-  $('share-item').addEventListener('click',async()=>{const item=state.items[state.active];if(!item)return;const url=new URL(location.href);url.hash='item='+encodeURIComponent(item.id);try{await navigator.clipboard.writeText(url.href);showToast('Item link copied');}catch{showToast('Copy this page URL to share');history.replaceState(null,'',url);}});
+  window.ashlanShop = {
+    current:()=>itemAt(state.active),
+    items:()=>state.items,
+    refresh:renderItems,
+    openOffer:id=>{const item=state.items.find(x=>x.id===id);if(item)openItem(item.index);},
+    openSnapshot:item=>{const current=state.items.find(x=>x.id===item.id);if(current){openItem(current.index);return;}const index=-(libraryItems.size+1);libraryItems.set(index,{...item,index});openItem(index);},
+    openCosmetic(raw,kind='br') {
+      const id='cosmetic-'+kind+'-'+raw.id;
+      let item=[...libraryItems.values()].find(x=>x.id===id);
+      if(!item){
+        const entry = {[kind==='br'?'brItems':kind==='tracks'?'tracks':kind==='cars'?'cars':kind==='instruments'?'instruments':'brItems']:[raw]};
+        item=normalize(entry,-(libraryItems.size+1),state.shopDate);
+        Object.assign(item,{id,catalog:true,section:'Cosmetic Library',name:raw.name||raw.title||raw.id,cosmeticId:kind==='br'?raw.id:null,isNew:false,availability:raw.shopHistory?.length?'Previously in shop':'Availability unconfirmed'});
+        item.search=`${item.name} ${item.typeLabel} ${item.description}`.toLowerCase();
+        const offer=state.items.find(x=>x.cosmeticId===raw.id||x.track?.id===raw.id);
+        if(offer){item.availability='In today’s shop';item.price=offer.price;}
+        if(item.track&&trackCatalog)item.preview=safeImage(trackCatalog[item.track.devName]?.previewUrl);
+        libraryItems.set(item.index,item);
+      }
+      openItem(item.index);
+    },
+    isSaved:(kind,id)=>state.favorites.has('cosmetic-'+kind+'-'+id),
+    inShop:id=>state.items.some(x=>x.cosmeticId===id||x.track?.id===id),
+    close:closeItem
+  };
+  $('share-item').addEventListener('click',async()=>{const item=itemAt(state.active);if(!item)return;const url=new URL(location.href);url.hash=(item.catalog?'cosmetic=':'item=')+encodeURIComponent(item.id);try{await navigator.clipboard.writeText(url.href);showToast('Item link copied');}catch{showToast('Copy this page URL to share');history.replaceState(null,'',url);}});
   readFavorites();wire();updateCountdown();setInterval(updateCountdown,1000);fetchShop().then(()=>{if(location.hash.startsWith('#item=')){const id=decodeURIComponent(location.hash.slice(6));const item=state.items.find(x=>x.id===id);if(item)openItem(item.index);}});
   if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 

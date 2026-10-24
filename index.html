@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./game.css">
   <title>Ashlan Shop — Today's Fortnite Item Shop</title>
 </head>
 <body><a class="skip-link" href="#shop-content">Skip to shop</a>
@@ -38,8 +38,8 @@
       <a class="brand" href="#top" aria-label="Ashlan Shop home" id="brand-link"><span class="brand-mark"><span>A</span></span><span class="brand-word">ASHLAN<span>SHOP</span></span></a>
       <nav class="primary-nav" aria-label="Main navigation">
         <button class="nav-link is-active" type="button" data-view="shop">Shop</button>
-        <button class="nav-link" type="button" data-view="new">New today</button>
-        <button class="nav-link nav-favorites" type="button" data-view="favorites">My List <span class="fav-count" id="fav-count" hidden>0</span></button>
+        <button class="nav-link" type="button" data-sandbox="locker">Locker<span id="locker-count" hidden></span></button><button class="nav-link" type="button" data-sandbox="vbucks">V-Bucks</button><button class="nav-link" type="button" data-page="library">Library</button><details class="more-menu"><summary>Explore</summary><div class="more-menu-panel"><button class="nav-link" type="button" data-page="news">News</button><button class="nav-link" type="button" data-page="map">Map</button><button class="nav-link" type="button" data-page="modes">Modes</button><button class="nav-link" type="button" data-view="new">New today</button>
+        <button class="nav-link nav-favorites" type="button" data-view="favorites">My List <span class="fav-count" id="fav-count" hidden>0</span></button></div></details>
       </nav>
       <div class="header-actions">
         <div class="search-wrap" id="search-wrap">
@@ -53,7 +53,7 @@
     </div>
   </header>
 
-  <main id="top">
+  <div class="account-strip"><span class="account-name">ASHLAN</span><button id="wallet-balance" type="button" aria-label="Add V-Bucks"><img src="https://fortnite-api.com/images/vbuck.png" alt=""><strong id="balance-count">0</strong><span>+</span></button></div><main id="top">
     <section class="hero is-loading" id="hero" aria-label="Featured cosmetic">
       <div class="hero-glow" id="hero-glow"></div>
       <div class="hero-backdrop" id="hero-backdrop"></div>
@@ -71,9 +71,9 @@
       <div class="hero-bottom page-width"><span id="hero-caption">DAILY ROTATION</span><div class="hero-timer"><svg class="icon"><use href="#i-clock"/></svg><span>New shop in</span><strong id="hero-countdown">--:--:--</strong></div></div>
     </section>
 
-    <section class="shop-shell page-width" id="shop-content" aria-label="Item shop listings">
+    <button type="button" id="filter-toggle" class="filter-toggle" aria-label="Show shop filters" aria-expanded="false">☰</button><nav id="section-rail" class="section-rail" aria-label="Shop sections"></nav><section class="shop-shell page-width" id="shop-content" aria-label="Item shop listings">
       <div class="section-intro">
-        <div><p class="eyebrow-small" id="section-overline">THE DAILY DROP</p><h2 id="section-heading">Today's Shop</h2></div>
+        <div><p class="eyebrow-small" id="section-overline">ASHLAN SANDBOX</p><h2 id="section-heading">Item Shop</h2></div><button class="button button-primary" id="get-vbucks" type="button">Ⓥ Get V-Bucks</button>
         <div class="shop-summary"><span class="status-pill" id="status-pill"><span class="status-light"></span><span id="status-label">Connecting</span></span><span class="summary-sep"></span><span id="item-count">Loading items</span></div>
       </div>
       <div class="category-bar" id="category-bar" role="toolbar" aria-label="Filter by item type">
@@ -88,30 +88,30 @@
       <div class="notice" id="notice" hidden><svg class="icon"><use href="#i-info"/></svg><span id="notice-text"></span><button id="retry-button" class="notice-retry" type="button">Try again</button></div>
       <div class="shop-results" id="shop-results" aria-live="polite" aria-busy="true"><div class="skeleton-row"><div class="skeleton-heading"></div><div class="skeleton-cards"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div><div class="skeleton-row"><div class="skeleton-heading"></div><div class="skeleton-cards"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div></div>
     </section>
-  </main>
+    <section id="explore-shell" class="explore-shell page-width" hidden aria-label="Explore Fortnite"></section><section id="sandbox-shell" class="sandbox-shell page-width" hidden aria-label="Locker and V-Bucks"></section></main>
 
-  <footer class="footer"><div class="page-width footer-inner"><div class="footer-brand"><span class="footer-brand-name">ASHLAN SHOP</span><span>Your daily Fortnite item shop.</span></div><div class="footer-right"><span>Unofficial fan project. Not affiliated with Epic Games.</span><span>Previews via <a href="https://www.fnfestival.co/" target="_blank" rel="noopener noreferrer">FNFestival</a>. Item data by <a href="https://fortnite-api.com/" target="_blank" rel="noopener noreferrer">Fortnite-API</a>.</span><button type="button" id="footer-refresh">Refresh shop <svg class="icon"><use href="#i-refresh"/></svg></button></div></div></footer>
+  <footer class="footer"><div class="page-width footer-inner"><div class="footer-brand"><span class="footer-brand-name">ASHLAN SHOP</span><span>Your daily Fortnite item shop.</span></div><div class="footer-right"><button type="button" id="footer-refresh">Refresh shop <svg class="icon"><use href="#i-refresh"/></svg></button></div></div></footer>
 
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true" hidden>
     <div class="modal-shade" data-close="true"></div>
     <div class="modal-panel" id="modal-panel">
       <button class="modal-close" type="button" id="modal-close" aria-label="Close details"><svg class="icon"><use href="#i-close"/></svg></button>
-      <div class="modal-art-frame" id="modal-art-frame"><img id="modal-image" class="modal-image" alt=""></div>
+      <div class="modal-art-frame" id="modal-art-frame"><img id="modal-image" class="modal-image" alt=""><video id="stage-video" class="stage-video" autoplay muted loop playsinline hidden aria-label="Animated cosmetic preview"></video><div id="stage-showcase" class="stage-showcase" hidden></div></div>
       <div class="modal-content">
         <p class="eyebrow-small" id="modal-category">ITEM SHOP</p>
         <h2 id="modal-title"></h2>
         <div class="modal-tags" id="modal-tags"></div>
         <p id="modal-description" class="modal-description"></p>
         <div class="modal-price-row"><div class="modal-price" id="modal-price"></div><div class="modal-old-price" id="modal-old-price"></div></div>
-        <div class="modal-includes" id="modal-includes" hidden><h3>Included items</h3><div id="included-list" class="included-list"></div></div>
+        <div class="purchase-area"><p id="purchase-status" role="status"></p><button id="purchase-item" class="purchase-button" type="button">Purchase</button></div><div class="modal-includes" id="modal-includes" hidden><h3>Included items</h3><div id="included-list" class="included-list"></div></div>
         <div id="modal-media" class="modal-media"></div><div class="modal-details" id="modal-details"></div>
         <button type="button" class="button button-primary modal-save" id="modal-save"><svg class="icon"><use href="#i-heart"/></svg><span>Save to My List</span></button>
-        <button class="button button-outline share-item" id="share-item" type="button">Copy item link ↗</button><p class="modal-disclaimer">Prices and availability are shown for reference. Purchases happen inside Fortnite.</p>
+        <button class="button button-outline share-item" id="share-item" type="button">Copy item link ↗</button>
       </div>
     </div>
   </div>
   <aside id="audio-player" class="audio-player" aria-label="Audio preview player" hidden><img id="player-art" alt=""><div class="player-copy"><strong id="player-title"></strong><span id="player-artist"></span></div><audio id="track-audio" controls preload="none"></audio><button id="player-close" class="icon-button" aria-label="Close audio preview">×</button></aside><div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="./app.js" defer></script>
+  <script src="./app.js" defer></script><script src="./explore.js" defer></script><script src="./wallet.js" defer></script><script src="./sandbox.js" defer></script>
 </body>
 </html>
 
